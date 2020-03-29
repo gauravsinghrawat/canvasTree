@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree canvas</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        canvas{
+            position: absolute;
+             width: 100%;
+            height: 100%;
+            background: #000;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+           
+        }
+        
+        .generate-tree-button{
+            cursor: pointer;
+            outline:  none;
+            border: none;
+            position: absolute;
+            left: 0;
+            bottom: 5%;
+            z-index: 10;
+            left: 50%;
+            transform: translate(-50%, 0);
+            padding:  20px 30px;
+            border-radius: 50px;
+            background: brown;
+            color: #000;
+            font-size:  20px;
+            width:  300px;
+            overflow: hidden;
+        }
+    
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <!--<button class="generate-tree-button">Generate Random Tree</button>-->
+    
+    <script type='text/javascript'>
+    
+        const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const generateButton = document.querySelector('.generate-tree-button');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+//colorArray = ['red','lime','orange', 'white', 'blue', 'skyblue'];
+
+
+function drawTree(startX, startY, len, angle,branchWidth, color1, color2){
+    ctx.beginPath();
+    ctx.save();
+    ctx.strokeStyle = color1;
+    ctx.fillStyle = color2;
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 15;
+    ctx.lineWidth = branchWidth;
+    ctx.lineCap = 'beval';
+    ctx.translate(startX, startY );
+    ctx.rotate(angle * Math.PI/180);
+    ctx.moveTo(0,0);
+    //ctx.lineTo(0, -len);
+   if(angle < 10){
+        ctx.bezierCurveTo(20, -len/2, 20, -len/2, 0, -len);
+   }
+    else{
+         ctx.bezierCurveTo(20, -len/2, -20, -len/2, 0, -len);
+    }
+    ctx.stroke();
+   // ctx.closePath();
+
+
+if(len < 10){
+    ctx.beginPath();
+    ctx.arc(0, -len, 40, 0, Math.PI/2,false);
+    ctx.fill();
+    ctx.restore();
+    return;
+}
+    curve = (Math.random()*10) + 10;
+
+drawTree(0, -len, len * 0.75, angle + curve, branchWidth * 0.5);
+drawTree(0, -len, len * 0.75, angle - curve, branchWidth * 0.5);
+    
+    ctx.restore();
+}
+drawTree(canvas.width/2, canvas.height - 20,150, 0, 150, 'brown', 'green');
+        
+window.addEventListener('click', function(){
+
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    colorArray = `rgb(${Math.random()*255   },${Math.random()*255},${Math.random()*255})`;
+colorArray1 = `rgb(${Math.random()*255   },${Math.random()*255},${Math.random()*255})`;
+     drawTree(canvas.width/2, canvas.height - 20, 140, 0, 50, colorArray, colorArray1);
+})
+
+//Random postive negative expansion function 
+function branchPositive(min,max){
+    return Math.floor(Math.random() * (max-min) + max);
+}
+function branchNegative(min,max){
+    return Math.floor(Math.random() * (max-min) - max);
+}
+//console.log(branchPositive(-100,30));
+//console.log(branchNegative(-100,30));
+mouse = {
+    x:null,
+    y:null
+}
+
+let angle = 1;
+canvas.addEventListener('mousemove', function(e){
+    //const colors = colorArray[Math.floor(Math.random() * colorArray.length)];
+    colorArray = `rgb(${Math.random()*255   },${Math.random()*255},${Math.random()*255})`;
+colorArray1 = `rgb(${Math.random()*255   },${Math.random()*255},${Math.random()*255})`;
+  //  const colors = 'orange';
+    if(e.x > canvas.width/2){
+        
+        if(angle < 20){
+            angle++;
+        }
+    }
+    else if(e.x < canvas.width/2){
+        
+        if(angle > -20){
+            angle--;
+        }
+    }
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+     drawTree(canvas.width/2, canvas.height - 20, 140, angle, 50, colorArray, colorArray1);
+})
+
+canvas.addEventListener('mouseout', function(){
+    mouse.x = undefined;
+    mouse.y = undefined;
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+     drawTree(canvas.width/2, canvas.height - 20, 140, 0, 70, 'orange', 'orangered');
+})
+
+
+    
+    </script>
+</body>
+</html>
